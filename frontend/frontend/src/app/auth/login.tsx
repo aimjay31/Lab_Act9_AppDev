@@ -3,13 +3,17 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Pressable,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
+
+import GlassCard from "@/components/ui/GlassCard";
 
 export default function Login() {
   const router = useRouter();
@@ -41,8 +45,6 @@ export default function Login() {
 
       const data = await response.json();
 
-      console.log("LOGIN RESPONSE:", data);
-
       if (!response.ok) {
         Alert.alert("Login Failed", data?.detail || "Invalid credentials");
         return;
@@ -50,12 +52,8 @@ export default function Login() {
 
       await AsyncStorage.setItem("auth_token", data.token);
 
-      Alert.alert("Success", "Logged in successfully!");
-
-
       router.replace("/tabs/dashboard");
     } catch (error) {
-      console.log("LOGIN ERROR:", error);
       Alert.alert("Error", "Cannot reach server");
     } finally {
       setLoading(false);
@@ -63,88 +61,115 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Ready to Study with ShapR?</Text>
+    <KeyboardAvoidingView
+      style={{
+        flex: 1,
+        backgroundColor: "#013c58",
+        justifyContent: "center",
+        padding: 20,
+      }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      {/* HEADER */}
+      <View style={{ alignItems: "center", marginBottom: 30 }}>
+        <Ionicons name="school-outline" size={50} color="#f7ad19" />
 
-      <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        style={styles.input}
-        autoCapitalize="none"
-      />
-
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        secureTextEntry
-      />
-
-      <Pressable
-        style={[styles.button, loading && { opacity: 0.6 }]}
-        onPress={handleLogin}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>Login</Text>
-        )}
-      </Pressable>
-
-      <Text style={styles.signupText}>
-        ...don’t have an account?{" "}
         <Text
-          style={styles.signupLink}
-          onPress={() => router.push("/auth/signup")}
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: "#a8e8f9",
+            marginTop: 10,
+            textAlign: "center",
+          }}
         >
-          Sign up
+          Welcome to ShapR
         </Text>
-      </Text>
-    </View>
+
+        <Text style={{ color: "#a8e8f9", opacity: 0.6, marginTop: 5 }}>
+          Focus. Learn. Improve.
+        </Text>
+      </View>
+
+      {/* LOGIN CARD (GLASSMORPHISM) */}
+      <GlassCard>
+        {/* USERNAME */}
+        <Text style={{ color: "#a8e8f9", marginBottom: 6 }}>Username</Text>
+        <TextInput
+          placeholder="Enter username"
+          placeholderTextColor="#a8e8f9"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          style={{
+            color: "#fff",
+            borderBottomWidth: 1,
+            borderBottomColor: "#a8e8f9",
+            paddingVertical: 8,
+            marginBottom: 16,
+          }}
+        />
+
+        {/* PASSWORD */}
+        <Text style={{ color: "#a8e8f9", marginBottom: 6 }}>Password</Text>
+        <TextInput
+          placeholder="Enter password"
+          placeholderTextColor="#a8e8f9"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={{
+            color: "#fff",
+            borderBottomWidth: 1,
+            borderBottomColor: "#a8e8f9",
+            paddingVertical: 8,
+            marginBottom: 20,
+          }}
+        />
+
+        {/* LOGIN BUTTON */}
+        <Pressable
+          onPress={handleLogin}
+          disabled={loading}
+          style={{
+            backgroundColor: "#f7ad19",
+            padding: 14,
+            borderRadius: 14,
+            alignItems: "center",
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: 8,
+            opacity: loading ? 0.6 : 1,
+          }}
+        >
+          {loading ? (
+            <ActivityIndicator color="#013c58" />
+          ) : (
+            <>
+              <Ionicons name="log-in-outline" size={18} color="#013c58" />
+              <Text style={{ color: "#013c58", fontWeight: "bold" }}>
+                Login
+              </Text>
+            </>
+          )}
+        </Pressable>
+      </GlassCard>
+
+      {/* SIGNUP LINK */}
+      <View style={{ marginTop: 20, alignItems: "center" }}>
+        <Text style={{ color: "#a8e8f9" }}>
+          Don’t have an account?{" "}
+          <Text
+            style={{
+              color: "#f7ad19",
+              fontWeight: "bold",
+            }}
+            onPress={() => router.push("/auth/signup")}
+          >
+            Sign up
+          </Text>
+        </Text>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: "black",
-    padding: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  signupText: {
-    marginTop: 20,
-    textAlign: "center",
-    color: "#666",
-  },
-  signupLink: {
-    color: "blue",
-    fontWeight: "bold",
-  },
-});

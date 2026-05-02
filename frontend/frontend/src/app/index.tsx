@@ -1,6 +1,9 @@
 import { useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+
+import GlassCard from "@/components/ui/GlassCard";
 
 export default function Index() {
   const router = useRouter();
@@ -8,36 +11,63 @@ export default function Index() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.replace("/auth/login");
-    }, 3000);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ShapR</Text>
-      <Text style={styles.text}>Loading...</Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#013c58",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+      }}
+    >
+      {/* LOGO / BRAND */}
+      <GlassCard style={{ alignItems: "center", paddingVertical: 30 }}>
+        <Ionicons name="flash" size={50} color="#f7ad19" />
 
-      <ActivityIndicator size="large" color="#000" />
+        <Text
+          style={{
+            fontSize: 34,
+            fontWeight: "bold",
+            color: "#a8e8f9",
+            marginTop: 10,
+            letterSpacing: 2,
+          }}
+        >
+          ShapR
+        </Text>
+
+        <Text
+          style={{
+            color: "#a8e8f9",
+            opacity: 0.6,
+            marginTop: 6,
+            textAlign: "center",
+          }}
+        >
+          Focus. Learn. Improve.
+        </Text>
+      </GlassCard>
+
+      {/* LOADING SECTION */}
+      <View style={{ marginTop: 30, alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#f7ad19" />
+
+        <Text
+          style={{
+            marginTop: 12,
+            color: "#a8e8f9",
+            opacity: 0.7,
+          }}
+        >
+          Initializing experience...
+        </Text>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 20,
-    color: "#666",
-  },
-});
